@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="customskin"
+version="1.0.0"
+displayName="Custom Skin (Self)"
+authors="customskin"
+description='''
+Client-side only mod that replaces your own skin with an imported texture (self-visible).
+纯客户端模组：把你的皮肤替换为自己导入的贴图，仅自己可见。
+'''
+displayTest="IGNORE_ALL_VERSION"
+
+[[dependencies.customskin]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.customskin]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="CLIENT"
+
+[[mixins]]
+config="customskin.mixins.json"
