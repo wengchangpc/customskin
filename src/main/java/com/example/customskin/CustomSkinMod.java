@@ -44,12 +44,15 @@ public class CustomSkinMod {
     private void onRegisterClientCommands(RegisterClientCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("customskin")
             .then(Commands.literal("reload").executes(ctx -> {
-                Minecraft.getInstance().execute(SkinTextureManager::load);
-                ctx.getSource().sendSuccess(() -> Component.literal(
-                        SkinTextureManager.isAvailable()
-                            ? "[CustomSkin] 皮肤已重新加载！(model=" + (SkinTextureManager.isSlim() ? "slim" : "classic") + ")"
-                            : "[CustomSkin] 未找到 skin.png，请把皮肤放到 .minecraft/config/CustomSkin/skin.png"),
-                    false);
+                // 反馈必须在加载完成之后给出（load 在渲染线程执行）
+                Minecraft.getInstance().execute(() -> {
+                    SkinTextureManager.load();
+                    ctx.getSource().sendSuccess(() -> Component.literal(
+                            SkinTextureManager.isAvailable()
+                                ? "[CustomSkin] 皮肤已重新加载！(model=" + (SkinTextureManager.isSlim() ? "slim" : "classic") + ")"
+                                : "[CustomSkin] 未找到 skin.png，请把皮肤放到 config/CustomSkin/skin.png"),
+                        false);
+                });
                 return 1;
             })));
     }
