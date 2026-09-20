@@ -66,7 +66,7 @@ public class CustomSkinMod {
                         false);
                 });
                 return 1;
-            })))
+            }))
             .then(Commands.literal("gloss").executes(ctx -> {
                 SkinConfig.gloss = !SkinConfig.gloss;
                 SkinConfig.save();
