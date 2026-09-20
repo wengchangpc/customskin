@@ -27,10 +27,22 @@ public class CustomSkinMod {
 
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::onClientSetup);
+        modBus.addListener(this::onAddLayers);
 
         MinecraftForge.EVENT_BUS.addListener(this::onRegisterClientCommands);
 
         LOGGER.info("[CustomSkin] 已初始化，你的皮肤你做主！");
+    }
+
+    /** 把流光镀层挂到玩家渲染器上（Forge 47.x 全版本兼容写法）。 */
+    private void onAddLayers(net.minecraftforge.client.event.EntityRenderersEvent.AddLayers event) {
+        for (String skin : event.getSkins()) {
+            var renderer = event.getSkin(skin);
+            if (renderer instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer pr) {
+                pr.addLayer(new GlossLayer(pr));
+            }
+        }
+        LOGGER.info("[CustomSkin] 流光镀层已挂载！");
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
@@ -52,6 +64,24 @@ public class CustomSkinMod {
                                 ? "[CustomSkin] 皮肤已重新加载！(model=" + (SkinTextureManager.isSlim() ? "slim" : "classic") + ")"
                                 : "[CustomSkin] 未找到 skin.png，请把皮肤放到 config/CustomSkin/skin.png"),
                         false);
+                });
+                return 1;
+            })))
+            .then(Commands.literal("gloss").executes(ctx -> {
+                SkinConfig.gloss = !SkinConfig.gloss;
+                SkinConfig.save();
+                ctx.getSource().sendSuccess(() -> Component.literal(
+                        SkinConfig.gloss ? "[CustomSkin] 流光镀层已开启！" : "[CustomSkin] 流光镀层已关闭。"), false);
+                return 1;
+            }))
+            .then(Commands.literal("vivid").executes(ctx -> {
+                SkinConfig.vivid = !SkinConfig.vivid;
+                SkinConfig.save();
+                // 重新加载贴图使增艳开关立即生效，反馈在加载完成后给出
+                Minecraft.getInstance().execute(() -> {
+                    SkinTextureManager.load();
+                    ctx.getSource().sendSuccess(() -> Component.literal(
+                            "[CustomSkin] 增艳" + (SkinConfig.vivid ? "已开启，" : "已关闭，") + "皮肤已重新加载！"), false);
                 });
                 return 1;
             })));

@@ -40,3 +40,6 @@ Mixin 注入 `AbstractClientPlayer#getSkinTextureLocation`（SRG: `m_108560_`）
 ## License
 
 MIT
+
+## 更新日志
+- 1.1.0：新增琉璃镀层——gloss 流光(全亮度脉动光泽层) + vivid 增艳(贴图加载时提饱和+35%/亮度+10%)；/customskin gloss|vivid 开关，settings.txt 可调 glossAlpha。
